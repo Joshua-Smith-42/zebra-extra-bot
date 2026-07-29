@@ -7,6 +7,7 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
 public class DifferentialIntakeArm {
     private DcMotor leftMotor;
@@ -55,6 +56,17 @@ public class DifferentialIntakeArm {
         OUTTAKE
     }
 
+    private boolean leftFull() {
+        return leftSensor.getDistance(DistanceUnit.MM) < 5;
+    }
+    private boolean rightFull(){
+        return rightSensor.getDistance(DistanceUnit.MM) < 5;
+    }
+
+    public boolean outtakeFull() {
+        return rightFull() && leftFull();
+    }
+
     public void intake() {
         intakeModifier = 1;
     }
@@ -69,7 +81,7 @@ public class DifferentialIntakeArm {
         desiredArmPos = newPos;
     }
 
-    public void armGoTo(ArmPosistions pos) {
+    public void goTo(ArmPosistions pos) {
         switch (pos) {
             case INTAKE:
                 setDesiredArmPos(INTAKE_POS);

@@ -7,12 +7,14 @@ import org.firstinspires.ftc.teamcode.Mechanisms.DifferentialIntakeArm;
 
 
 public class TeleOp extends OpMode {
-    public static final double TRIGGER_THRESHOLD = 0.2;
+    private static final double TRIGGER_THRESHOLD = 0.2;
+    private boolean wasFull;
     Chassis chassis;
     DifferentialIntakeArm arm;
 
     @Override
     public void init() {
+        wasFull = false;
         chassis = new Chassis(hardwareMap);
         arm = new DifferentialIntakeArm(hardwareMap);
     }
@@ -27,6 +29,11 @@ public class TeleOp extends OpMode {
             chassis.boostOff();
         }
 
+        if(arm.outtakeFull() && !wasFull) {
+            gamepad1.rumble(500);
+            arm.goTo(DifferentialIntakeArm.ArmPosistions.TRANSFER);
+        }
+
         if (gamepad1.left_trigger > TRIGGER_THRESHOLD) {
             arm.intake();
         } else if (gamepad1.right_trigger > TRIGGER_THRESHOLD) {
@@ -36,11 +43,12 @@ public class TeleOp extends OpMode {
         }
 
         if (gamepad1.a) {
-            arm.armGoTo(DifferentialIntakeArm.ArmPosistions.INTAKE);
+            arm.goTo(DifferentialIntakeArm.ArmPosistions.INTAKE);
         } else if (gamepad1.b) {
-            arm.armGoTo(DifferentialIntakeArm.ArmPosistions.OUTTAKE);
+            arm.goTo(DifferentialIntakeArm.ArmPosistions.OUTTAKE);
         } else if (gamepad1.y) {
-            arm.armGoTo(DifferentialIntakeArm.ArmPosistions.TRANSFER);
+            arm.goTo(DifferentialIntakeArm.ArmPosistions.TRANSFER);
         }
+        wasFull = arm.outtakeFull();
     }
 }
