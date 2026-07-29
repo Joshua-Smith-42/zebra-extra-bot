@@ -10,23 +10,22 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
 public class DifferentialIntakeArm {
-    private DcMotor leftMotor;
-    private DcMotor rightMotor;
-    private RevColorSensorV3 leftSensor;
-    private RevColorSensorV3 rightSensor;
-    private RevTouchSensor limitSwitch;
-    private double leftPower;
-    private double rightPower;
-    private int currentArmPos;
-    private int desiredArmPos;
-    private  double intakeModifier;
-
     //TODO: make posistions real values
     private static final int INTAKE_POS = 0;
     private static final int TRANSFER_POS = 40;
     private static final int OUTTAKE_POS = 250;
     private static final double INTAKE_SPEED = 1.0;
     private static final double KP = 0.005;
+    private final DcMotor leftMotor;
+    private final DcMotor rightMotor;
+    private final RevColorSensorV3 leftSensor;
+    private final RevColorSensorV3 rightSensor;
+    private final RevTouchSensor limitSwitch;
+    private double leftPower;
+    private double rightPower;
+    private int currentArmPos;
+    private int desiredArmPos;
+    private double intakeModifier;
 
     public DifferentialIntakeArm(HardwareMap hwMap) {
         leftMotor = hwMap.get(DcMotor.class, "left_arm");
@@ -50,16 +49,11 @@ public class DifferentialIntakeArm {
         intakeModifier = 0;
     }
 
-    public enum ArmPosistions {
-        INTAKE,
-        TRANSFER,
-        OUTTAKE
-    }
-
     private boolean leftFull() {
         return leftSensor.getDistance(DistanceUnit.MM) < 5;
     }
-    private boolean rightFull(){
+
+    private boolean rightFull() {
         return rightSensor.getDistance(DistanceUnit.MM) < 5;
     }
 
@@ -70,6 +64,7 @@ public class DifferentialIntakeArm {
     public void intake() {
         intakeModifier = 1;
     }
+
     public void outtake() {
         intakeModifier = -1;
     }
@@ -77,6 +72,7 @@ public class DifferentialIntakeArm {
     public void intakeOff() {
         intakeModifier = 0;
     }
+
     private void setDesiredArmPos(int newPos) {
         desiredArmPos = newPos;
     }
@@ -117,6 +113,12 @@ public class DifferentialIntakeArm {
         telemetry.addData("desired arm pos", desiredArmPos);
         telemetry.addData("error", error);
         telemetry.addData("power", armPower);
+    }
+
+    public enum ArmPosistions {
+        INTAKE,
+        TRANSFER,
+        OUTTAKE
     }
 
 }

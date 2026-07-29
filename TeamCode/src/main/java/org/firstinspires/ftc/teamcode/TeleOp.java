@@ -8,9 +8,9 @@ import org.firstinspires.ftc.teamcode.Mechanisms.DifferentialIntakeArm;
 
 public class TeleOp extends OpMode {
     private static final double TRIGGER_THRESHOLD = 0.2;
-    private boolean wasFull;
     Chassis chassis;
     DifferentialIntakeArm arm;
+    private boolean wasFull;
 
     @Override
     public void init() {
@@ -29,7 +29,7 @@ public class TeleOp extends OpMode {
             chassis.boostOff();
         }
 
-        if(arm.outtakeFull() && !wasFull) {
+        if (arm.outtakeFull() && !wasFull) {
             gamepad1.rumble(500);
             arm.goTo(DifferentialIntakeArm.ArmPosistions.TRANSFER);
         }

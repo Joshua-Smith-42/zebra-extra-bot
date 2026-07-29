@@ -3,17 +3,18 @@ package org.firstinspires.ftc.teamcode.Mechanisms;
 import com.qualcomm.hardware.gobilda.GoBildaPinpointDriver;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 
 public class Chassis {
-    private DcMotor frontLeft;
-    private DcMotor frontRight;
-    private DcMotor backLeft;
-    private DcMotor backRight;
-    private GoBildaPinpointDriver pinpoint;
-    private double speedModifier;
     private static final double BOOST_SPEED = 1.0;
     private static final double REGULAR_SPEED = 0.8;
+    private final DcMotor frontLeft;
+    private final DcMotor frontRight;
+    private final DcMotor backLeft;
+    private final DcMotor backRight;
+    private final GoBildaPinpointDriver pinpoint;
+    private double speedModifier;
 
     public Chassis(HardwareMap hwMap) {
         frontLeft = hwMap.get(DcMotor.class, "front_left");
@@ -27,6 +28,7 @@ public class Chassis {
     public void boostOn() {
         speedModifier = BOOST_SPEED;
     }
+
     public void boostOff() {
         speedModifier = REGULAR_SPEED;
     }
