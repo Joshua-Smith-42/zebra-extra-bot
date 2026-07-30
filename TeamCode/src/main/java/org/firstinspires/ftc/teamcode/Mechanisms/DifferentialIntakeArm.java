@@ -10,12 +10,14 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
 public class DifferentialIntakeArm {
-    //TODO: make posistions real values
     private static final int INTAKE_POS = 0;
-    private static final int TRANSFER_POS = 40;
-    private static final int OUTTAKE_POS = 250;
+    private static final int TRANSFER_POS = 75;
+    private static final int OUTTAKE_POS = 210;
     private static final double INTAKE_SPEED = 1.0;
-    private static final double KP = 0.005;
+    private static final double VERTICAL_ARM_POS = 180;
+    private static final double KP = 0.008;
+    public static final int MANUAL_CHANGE = 1;
+    public static final double KF = 0.005;
     private final DcMotor leftMotor;
     private final DcMotor rightMotor;
     private final RevColorSensorV3 leftSensor;
@@ -29,7 +31,7 @@ public class DifferentialIntakeArm {
 
     public DifferentialIntakeArm(HardwareMap hwMap) {
         leftMotor = hwMap.get(DcMotor.class, "left_arm");
-        rightMotor = hwMap.get(DcMotor.class, "right_motor");
+        rightMotor = hwMap.get(DcMotor.class, "right_arm");
         leftSensor = hwMap.get(RevColorSensorV3.class, "left_sensor");
         rightSensor = hwMap.get(RevColorSensorV3.class, "right_sensor");
         limitSwitch = hwMap.get(RevTouchSensor.class, "limit_switch");
@@ -57,6 +59,13 @@ public class DifferentialIntakeArm {
         return rightSensor.getDistance(DistanceUnit.MM) < 5;
     }
 
+    public void manualUp() {
+        desiredArmPos += MANUAL_CHANGE;
+    }
+    public void manualDown() {
+        desiredArmPos -= MANUAL_CHANGE;
+    }
+
     public boolean outtakeFull() {
         return rightFull() && leftFull();
     }
@@ -66,7 +75,7 @@ public class DifferentialIntakeArm {
     }
 
     public void outtake() {
-        intakeModifier = -1;
+        intakeModifier = -0.5;
     }
 
     public void intakeOff() {
@@ -81,10 +90,13 @@ public class DifferentialIntakeArm {
         switch (pos) {
             case INTAKE:
                 setDesiredArmPos(INTAKE_POS);
+                break;
             case OUTTAKE:
                 setDesiredArmPos(OUTTAKE_POS);
+                break;
             case TRANSFER:
                 setDesiredArmPos(TRANSFER_POS);
+                break;
         }
     }
 
@@ -97,11 +109,15 @@ public class DifferentialIntakeArm {
         }
 
         currentArmPos = (leftMotor.getCurrentPosition() + rightMotor.getCurrentPosition()) / 2; //average left and right
+
+        double additionalForce = (VERTICAL_ARM_POS - currentArmPos) * KF;
+
         double error = desiredArmPos - currentArmPos;
-        double armPower = error * KP;
-        if (desiredArmPos == 0 && !limitSwitch.isPressed()) {
-            armPower = Math.min(-0.2, armPower);
+        double armPower = error * KP + additionalForce;
+        if (desiredArmPos == 0 && limitSwitch.isPressed()) {
+            armPower = 0;
         }
+
 
         leftPower = armPower + intakeModifier;
         rightPower = armPower - intakeModifier;
@@ -111,6 +127,9 @@ public class DifferentialIntakeArm {
 
         telemetry.addData("current arm pos", currentArmPos);
         telemetry.addData("desired arm pos", desiredArmPos);
+        telemetry.addData("intake mod", intakeModifier);
+        telemetry.addData("left power", leftPower);
+        telemetry.addData("right power", rightPower);
         telemetry.addData("error", error);
         telemetry.addData("power", armPower);
     }

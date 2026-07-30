@@ -5,7 +5,7 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import org.firstinspires.ftc.teamcode.Mechanisms.Chassis;
 import org.firstinspires.ftc.teamcode.Mechanisms.DifferentialIntakeArm;
 
-
+@com.qualcomm.robotcore.eventloop.opmode.TeleOp
 public class TeleOp extends OpMode {
     private static final double TRIGGER_THRESHOLD = 0.2;
     Chassis chassis;
@@ -22,6 +22,7 @@ public class TeleOp extends OpMode {
     @Override
     public void loop() {
         arm.update(telemetry);
+        chassis.update(telemetry);
         chassis.driveFieldRelative(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x);
         if (gamepad1.left_stick_button) {
             chassis.boostOn();
@@ -29,10 +30,17 @@ public class TeleOp extends OpMode {
             chassis.boostOff();
         }
 
-        if (arm.outtakeFull() && !wasFull) {
+        if (gamepad1.dpad_up) {
+            arm.manualUp();
+        }
+        if (gamepad1.dpad_down) {
+            arm.manualDown();
+        }
+
+/*        if (arm.outtakeFull() && !wasFull) {
             gamepad1.rumble(500);
             arm.goTo(DifferentialIntakeArm.ArmPosistions.TRANSFER);
-        }
+        }*/
 
         if (gamepad1.left_trigger > TRIGGER_THRESHOLD) {
             arm.intake();

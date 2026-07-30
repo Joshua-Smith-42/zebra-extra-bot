@@ -2,8 +2,10 @@ package org.firstinspires.ftc.teamcode.Mechanisms;
 
 import com.qualcomm.hardware.gobilda.GoBildaPinpointDriver;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
+import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 
 public class Chassis {
@@ -22,7 +24,10 @@ public class Chassis {
         backLeft = hwMap.get(DcMotor.class, "back_left");
         backRight = hwMap.get(DcMotor.class, "back_right");
         pinpoint = hwMap.get(GoBildaPinpointDriver.class, "pinpoint");
+        backLeft.setDirection(DcMotorSimple.Direction.REVERSE);
+        frontLeft.setDirection(DcMotorSimple.Direction.REVERSE);
         speedModifier = REGULAR_SPEED;
+        pinpoint.setHeading(0, AngleUnit.RADIANS);
     }
 
     public void boostOn() {
@@ -48,7 +53,7 @@ public class Chassis {
     }
 
     public void driveFieldRelative(double fieldForwardSpeed, double fieldRightSpeed, double turnCWSpeed) {
-        double theta = Math.atan2(fieldForwardSpeed, fieldRightSpeed) + (Math.PI / 2); //add pi/2 to correct angle
+        double theta = Math.atan2(fieldForwardSpeed, fieldRightSpeed); //add pi/2 to correct angle
         double radius = Math.hypot(fieldForwardSpeed, fieldRightSpeed);
 
         double robotAngle = pinpoint.getHeading(AngleUnit.RADIANS);
@@ -58,5 +63,10 @@ public class Chassis {
         double rightSpeed = radius * Math.cos(theta);
 
         drive(forwardSpeed, rightSpeed, turnCWSpeed);
+    }
+    public void update(Telemetry telemetry) {
+        telemetry.addData("heading", pinpoint.getHeading(AngleUnit.DEGREES));
+        telemetry.addData("heading radioans", pinpoint.getHeading(AngleUnit.RADIANS));
+        pinpoint.update();
     }
 }
